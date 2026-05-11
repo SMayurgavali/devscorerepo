@@ -5,8 +5,39 @@
 
 import type { UserStats } from "./db";
 
+/**
+ * Extracts a username or handle from a full URL.
+ * Handles cases like:
+ * - https://github.com/username
+ * - https://leetcode.com/username/
+ * - https://leetcode.com/u/username/
+ * - username
+ */
+export function parseHandle(input: string, platform: string): string {
+  const s = input.trim();
+  if (!s) return "";
+  if (!s.includes("/")) return s;
+  try {
+    const url = new URL(s.startsWith("http") ? s : `https://${s}`);
+    const parts = url.pathname.split("/").filter(Boolean);
+    if (platform === "leetcode") {
+      // leetcode.com/u/username -> username
+      if (parts[0] === "u" && parts[1]) return parts[1];
+      return parts[0] || s;
+    }
+    if (platform === "linkedin") {
+      // linkedin.com/in/username -> username
+      const inIdx = parts.indexOf("in");
+      if (inIdx !== -1 && parts[inIdx + 1]) return parts[inIdx + 1];
+    }
+    return parts[0] || s;
+  } catch {
+    return s;
+  }
+}
+
 export async function fetchGithubStats(username: string): Promise<NonNullable<UserStats["github"]>> {
-  const u = encodeURIComponent(username.trim());
+  const u = encodeURIComponent(parseHandle(username, "github"));
   const [userRes, reposRes, eventsRes] = await Promise.all([
     fetch(`https://api.github.com/users/${u}`),
     fetch(`https://api.github.com/users/${u}/repos?per_page=100&sort=updated`),
@@ -46,7 +77,7 @@ export async function fetchGithubStats(username: string): Promise<NonNullable<Us
 }
 
 export async function fetchGitlabStats(username: string): Promise<NonNullable<UserStats["gitlab"]>> {
-  const u = encodeURIComponent(username.trim());
+  const u = encodeURIComponent(parseHandle(username, "gitlab"));
   const res = await fetch(`https://gitlab.com/api/v4/users?username=${u}`);
   if (!res.ok) throw new Error("GitLab lookup failed");
   const arr = await res.json();
@@ -62,11 +93,27 @@ export async function fetchGitlabStats(username: string): Promise<NonNullable<Us
 }
 
 export async function fetchLeetcodeStats(username: string): Promise<NonNullable<UserStats["leetcode"]>> {
-  const u = encodeURIComponent(username.trim());
-  const res = await fetch(`https://leetcode-stats-api.herokuapp.com/${u}`);
-  if (!res.ok) throw new Error("LeetCode lookup failed");
+  const u = encodeURIComponent(parseHandle(username, "leetcode"));
+  // Use Faisal Shohag's Vercel-hosted API as it's more reliable than the Heroku one.
+  const res = await fetch(`https://leetcode-api-faisalshohag.vercel.app/${u}`);
+  if (!res.ok) {
+    // Fallback to Heroku if Vercel is down
+    const fb = await fetch(`https://leetcode-stats-api.herokuapp.com/${u}`);
+    if (!fb.ok) throw new Error("LeetCode lookup failed");
+    const fbData = await fb.json();
+    if (fbData.status && fbData.status !== "success") throw new Error(fbData.message || "LeetCode user not found");
+    return {
+      totalSolved: fbData.totalSolved || 0,
+      easySolved: fbData.easySolved || 0,
+      mediumSolved: fbData.mediumSolved || 0,
+      hardSolved: fbData.hardSolved || 0,
+      ranking: fbData.ranking || 0,
+      acceptanceRate: fbData.acceptanceRate || 0,
+    };
+  }
   const data = await res.json();
-  if (data.status && data.status !== "success") throw new Error(data.message || "LeetCode user not found");
+  if (data.errors) throw new Error(data.errors[0]?.message || "LeetCode user not found");
+  
   return {
     totalSolved: data.totalSolved || 0,
     easySolved: data.easySolved || 0,
@@ -78,7 +125,7 @@ export async function fetchLeetcodeStats(username: string): Promise<NonNullable<
 }
 
 export async function fetchCodechefStats(username: string): Promise<NonNullable<UserStats["codechef"]>> {
-  const u = encodeURIComponent(username.trim());
+  const u = encodeURIComponent(parseHandle(username, "codechef"));
   // Community-maintained CORS proxy of CodeChef profile.
   const res = await fetch(`https://codechef-api.vercel.app/handle/${u}`);
   if (!res.ok) throw new Error("CodeChef lookup failed");

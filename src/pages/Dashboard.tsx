@@ -7,7 +7,7 @@ import {
 import { Link } from "react-router-dom";
 import { currentUser, saveStudentSync } from "../lib/auth";
 import { upsertUser, type LinkedInChecklist } from "../lib/db";
-import { fetchCodechefStats, fetchGithubStats, fetchGitlabStats, fetchLeetcodeStats } from "../lib/api";
+import { fetchCodechefStats, fetchGithubStats, fetchGitlabStats, fetchLeetcodeStats, parseHandle } from "../lib/api";
 import { appendDailySnapshot, computeReport, gradeMeta, type Pillar } from "../lib/score";
 import ScoreRing from "../components/ScoreRing";
 import Roadmap from "../components/Roadmap";
@@ -145,14 +145,14 @@ export default function Dashboard() {
           </Card>
 
           <Card title="2. Code" subtitle="Proof of Work · 400 pts" tone="emerald">
-            <Field label="GitHub username" value={github} onChange={setGithub} placeholder="e.g. torvalds" icon={<Code2 className="w-3.5 h-3.5" />} />
-            <Field label="GitLab username (optional)" value={gitlab} onChange={setGitlab} placeholder="e.g. yourname" icon={<Code2 className="w-3.5 h-3.5" />} />
+            <Field label="GitHub" value={github} onChange={setGithub} placeholder="username or profile URL" icon={<Code2 className="w-3.5 h-3.5" />} />
+            <Field label="GitLab" value={gitlab} onChange={setGitlab} placeholder="username or profile URL" icon={<Code2 className="w-3.5 h-3.5" />} />
           </Card>
 
           <Card title="3. DSA" subtitle="Logic · 400 pts" tone="sky">
-            <Field label="LeetCode username" value={leetcode} onChange={setLeetcode} placeholder="e.g. neetcode" icon={<Target className="w-3.5 h-3.5" />} />
-            <Field label="CodeChef handle (optional)" value={codechef} onChange={setCodechef} placeholder="e.g. yourhandle" icon={<Target className="w-3.5 h-3.5" />} />
-            <Field label="HackerRank handle (optional)" value={hackerrank} onChange={setHackerrank} placeholder="e.g. yourhandle" icon={<Target className="w-3.5 h-3.5" />} />
+            <Field label="LeetCode" value={leetcode} onChange={setLeetcode} placeholder="username or profile URL" icon={<Target className="w-3.5 h-3.5" />} />
+            <Field label="CodeChef" value={codechef} onChange={setCodechef} placeholder="handle or profile URL" icon={<Target className="w-3.5 h-3.5" />} />
+            <Field label="HackerRank" value={hackerrank} onChange={setHackerrank} placeholder="handle or profile URL" icon={<Target className="w-3.5 h-3.5" />} />
           </Card>
 
           <button onClick={sync} disabled={busy} className="w-full py-3 rounded-lg bg-indigo-600 text-white font-semibold inline-flex items-center justify-center gap-2 hover:bg-indigo-700 disabled:opacity-50">
