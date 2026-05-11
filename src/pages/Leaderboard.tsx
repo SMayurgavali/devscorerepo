@@ -60,18 +60,27 @@ export default function Leaderboard() {
 
       {/* podium (only show if 3+ ranked) */}
       {ranked.length >= 3 && (
-        <div className="grid grid-cols-3 gap-3 mb-8">
-          {[1, 0, 2].map((idx) => {
-            const r = ranked[idx]; if (!r) return <div key={idx} />;
-            const heights = ["h-28", "h-36", "h-24"];
-            const colors = ["bg-slate-200", "bg-amber-300", "bg-amber-700/30"];
-            const labels = [2, 1, 3];
+        <div className="grid grid-cols-3 gap-3 mb-8 items-end">
+          {[1, 0, 2].map((rankedIdx) => {
+            const r = ranked[rankedIdx];
+            if (!r) return <div key={rankedIdx} />;
+            
+            // Map the ranked index (0, 1, 2) to specific styles
+            const styles = [
+              { height: "h-36", color: "bg-amber-400", label: "1" }, // Gold (Rank 0)
+              { height: "h-28", color: "bg-slate-300", label: "2" }, // Silver (Rank 1)
+              { height: "h-20", color: "bg-orange-300", label: "3" }, // Bronze (Rank 2)
+            ];
+            
+            const s = styles[rankedIdx];
             return (
-              <Link to={`/u/${r.user.id}`} key={r.user.id} className="text-center group">
-                <div className="w-14 h-14 mx-auto rounded-full bg-indigo-100 text-indigo-700 grid place-items-center font-bold text-lg mb-2 group-hover:scale-110 transition">{r.user.name[0]}</div>
-                <div className="font-semibold text-sm text-slate-900 truncate">{r.user.name}</div>
-                <div className="text-xs text-slate-500">{r.total}</div>
-                <div className={`mt-2 ${heights[idx]} rounded-t-lg ${colors[idx]} grid place-items-center text-2xl font-bold text-slate-700`}>{labels[idx]}</div>
+              <Link to={`/u/${r.user.id}`} key={r.user.id} className="text-center group flex flex-col items-center">
+                <div className="w-14 h-14 rounded-full bg-white border-2 border-slate-200 text-indigo-700 grid place-items-center font-bold text-lg mb-2 group-hover:scale-110 transition shadow-sm">{r.user.name[0]}</div>
+                <div className="font-bold text-xs text-slate-900 truncate w-full px-1">{r.user.name}</div>
+                <div className="text-[10px] font-mono text-slate-500 mb-2">{r.total} pts</div>
+                <div className={`w-full ${s.height} rounded-t-xl ${s.color} flex items-center justify-center text-2xl font-black text-white shadow-inner`}>
+                  {s.label}
+                </div>
               </Link>
             );
           })}
