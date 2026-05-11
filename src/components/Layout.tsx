@@ -29,7 +29,6 @@ export default function Layout() {
             {user?.role === "tpo" && (
               <NavItem to="/admin" icon={<Building2 className="w-4 h-4" />}>TPO Admin</NavItem>
             )}
-            <NavItem to="/leaderboard" icon={<Trophy className="w-4 h-4" />}>Leaderboard</NavItem>
 
             {user ? (
               <div className="flex items-center gap-1 ml-2 pl-3 border-l border-slate-200">

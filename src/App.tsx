@@ -33,7 +33,6 @@ export default function App() {
           <Route path="/dashboard" element={<ProtectedRoute role="student"><Dashboard /></ProtectedRoute>} />
           <Route path="/recruiter" element={<ProtectedRoute role="recruiter"><Recruiter /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute role="tpo"><Admin /></ProtectedRoute>} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/u/:id" element={<Profile />} />
         </Route>
       </Routes>
