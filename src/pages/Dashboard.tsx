@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import { currentUser, saveStudentSync } from "../lib/auth";
 import { activeBackend } from "../server/database";
 import { upsertUser, type LinkedInChecklist } from "../lib/db";
-import { fetchCodechefStats, fetchGithubStats, fetchGitlabStats, fetchLeetcodeStats, parseHandle } from "../lib/api";
+import { fetchCodechefStats, fetchGithubStats, fetchGitlabStats, fetchLeetcodeStats } from "../lib/api";
 import { appendDailySnapshot, computeReport, gradeMeta, type Pillar } from "../lib/score";
 import ScoreRing from "../components/ScoreRing";
 import Roadmap from "../components/Roadmap";

@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LogOut, Search, LayoutDashboard, Trophy, User as UserIcon, Building2 } from "lucide-react";
+import { LogOut, Search, LayoutDashboard, User as UserIcon, Building2 } from "lucide-react";
 import { currentUser, logout } from "../lib/auth";
 import { cn } from "../utils/cn";
 import NotificationsBell from "./NotificationsBell";
