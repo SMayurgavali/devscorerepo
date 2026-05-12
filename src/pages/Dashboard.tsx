@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import {
-  AlertCircle, Briefcase, CheckCircle2, ChevronRight, Code2, ExternalLink, Flame,
+  AlertCircle, Briefcase, CheckCircle2, ChevronRight, Code2, Database, ExternalLink, Flame,
   Lightbulb, Loader2, RefreshCw, Star, Target, TrendingUp,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { currentUser, saveStudentSync } from "../lib/auth";
+import { activeBackend } from "../server/database";
 import { upsertUser, type LinkedInChecklist } from "../lib/db";
 import { fetchCodechefStats, fetchGithubStats, fetchGitlabStats, fetchLeetcodeStats, parseHandle } from "../lib/api";
 import { appendDailySnapshot, computeReport, gradeMeta, type Pillar } from "../lib/score";
@@ -79,7 +80,13 @@ export default function Dashboard() {
       <div className="flex items-end justify-between flex-wrap gap-4 mb-6">
         <div>
           <div className="text-sm text-slate-500">Hi {user.name.split(" ")[0]} 👋</div>
-          <h1 className="text-2xl font-bold text-slate-900">Your DevScore Report</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-slate-900">Your DevScore Report</h1>
+            <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${activeBackend() === "supabase" ? "bg-emerald-100 text-emerald-700 border border-emerald-200" : "bg-amber-100 text-amber-700 border border-amber-200"}`}>
+              <Database className="w-3 h-3" />
+              {activeBackend() === "supabase" ? "Cloud Sync Active (Supabase)" : "Local Storage Mode"}
+            </div>
+          </div>
         </div>
         <div className="flex gap-2">
           <Link to={`/u/${user.id}`} className="px-3 py-2 rounded-lg border border-slate-300 bg-white hover:border-slate-400 text-sm inline-flex items-center gap-2 text-slate-700">

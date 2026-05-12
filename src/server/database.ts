@@ -19,7 +19,9 @@ let _adapter: Adapter | null = null;
 
 export async function db(): Promise<Adapter> {
   if (_adapter) return _adapter;
-  const backend = (import.meta.env.VITE_BACKEND as string) || "indexeddb";
+  const url = import.meta.env.VITE_SUPABASE_URL;
+  const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const backend = (import.meta.env.VITE_BACKEND as string) || (url && key ? "supabase" : "indexeddb");
   _adapter = backend === "supabase" ? supabaseAdapter : indexedDBAdapter;
   await _adapter.init();
   return _adapter;

@@ -7,6 +7,20 @@ import {
 export default function Landing() {
   return (
     <div>
+      {/* Navbar */}
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-indigo-600 grid place-items-center text-white font-extrabold text-lg">D</div>
+            <span className="font-bold text-xl tracking-tight text-slate-900">DevScore</span>
+          </Link>
+          <div className="flex items-center gap-4">
+            <Link to="/auth?mode=login" className="text-sm font-medium text-slate-600 hover:text-slate-900">Sign in</Link>
+            <Link to="/auth?mode=signup&role=student" className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700">Get Started</Link>
+          </div>
+        </div>
+      </header>
+
       {/* ───────────────── Option 1 — The Anti-Resume (Bold hero) ───────────────── */}
       <section className="relative overflow-hidden border-b border-slate-200">
         <div className="absolute inset-0 -z-10 bg-gradient-to-br from-rose-50 via-white to-indigo-50" />

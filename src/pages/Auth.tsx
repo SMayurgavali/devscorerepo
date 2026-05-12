@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { login, signup } from "../lib/auth";
-import { Loader2, Sparkles } from "lucide-react";
+import { login, signup, logout, currentUser } from "../lib/auth";
+import { Loader2, Sparkles, LogOut, CheckCircle2 } from "lucide-react";
 import DemoDataPanel from "../components/DemoDataPanel";
 
 export default function Auth() {
   const [params] = useSearchParams();
   const nav = useNavigate();
+  const [user, setUser] = useState(currentUser());
   const [mode, setMode] = useState<"login" | "signup">((params.get("mode") as any) || "login");
   const [role, setRole] = useState<"student" | "recruiter">((params.get("role") as any) || "student");
   const [email, setEmail] = useState("");
@@ -14,6 +15,10 @@ export default function Auth() {
   const [name, setName] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    setUser(currentUser());
+  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -36,6 +41,34 @@ export default function Auth() {
     setPassword("demo1234");
   }
   const [showDemo, setShowDemo] = useState(false);
+
+  function handleLogout() {
+    logout();
+    setUser(null);
+    setMode("login");
+  }
+
+  if (user) {
+    return (
+      <div className="max-w-md mx-auto px-4 py-12 text-center">
+        <div className="w-16 h-16 mx-auto rounded-2xl bg-emerald-100 text-emerald-600 grid place-items-center mb-4">
+          <CheckCircle2 className="w-8 h-8" />
+        </div>
+        <h1 className="text-2xl font-bold text-slate-900">You're signed in</h1>
+        <p className="text-slate-500 mt-2">You are currently logged in as <b>{user.email}</b>.</p>
+        <div className="mt-8 space-y-3">
+          <button onClick={() => nav(user.role === "student" ? "/dashboard" : "/recruiter")} 
+            className="w-full py-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700">
+            Go to Dashboard
+          </button>
+          <button onClick={handleLogout} 
+            className="w-full py-3 rounded-lg border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 inline-flex items-center justify-center gap-2">
+            <LogOut className="w-4 h-4" /> Sign out
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto px-4 py-12">
